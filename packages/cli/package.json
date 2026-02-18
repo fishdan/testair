@@ -1,0 +1,23 @@
+{
+  "name": "@testair/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "testair": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -b --pretty false"
+  },
+  "dependencies": {
+    "@testair/ai": "0.1.0",
+    "@testair/core": "file:../core",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.7"
+  }
+}

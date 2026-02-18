@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "name": "Public site smoke test",
+  "steps": [
+    { "type": "goto", "url": "https://example.com" },
+    { "type": "expect", "textVisible": "Example Domain" },
+    { "type": "click", "target": "More information..." },
+    { "type": "expect", "urlIncludes": "iana.org" }
+  ]
+}
