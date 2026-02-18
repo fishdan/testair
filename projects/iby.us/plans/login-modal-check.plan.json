@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "name": "IBY sign-in click and submit check",
+  "steps": [
+    { "type": "goto", "url": "https://app.iby.us" },
+    { "type": "click", "target": "Sign in" },
+    { "type": "expect", "urlIncludes": "/login" },
+    { "type": "fill", "field": "email", "value": "${SECRET:IBY_USERNAME}" },
+    { "type": "fill", "field": "password", "value": "${SECRET:IBY_PASSWORD}" },
+    { "type": "click", "target": "Sign in" },
+    { "type": "waitFor", "timeoutMs": 3000 }
+  ]
+}

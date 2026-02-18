@@ -30,6 +30,7 @@ export interface RunResult {
   durationMs: number;
   plan: TestPlan;
   steps: StepResult[];
+  outputs: Record<string, string[]>;
   artifacts: RunArtifacts;
 }
 

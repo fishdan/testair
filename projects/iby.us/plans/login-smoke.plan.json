@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "name": "IBY login smoke",
+  "baseUrl": "https://app.iby.us",
+  "steps": [
+    { "type": "goto", "url": "https://app.iby.us/login" },
+    { "type": "fill", "field": "email", "value": "${SECRET:IBY_USERNAME}" },
+    { "type": "fill", "field": "password", "value": "${SECRET:IBY_PASSWORD}" },
+    { "type": "click", "target": "Sign in" },
+    { "type": "expect", "urlIncludes": "/wallet" }
+  ]
+}

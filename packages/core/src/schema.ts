@@ -61,13 +61,21 @@ export const waitForStepSchema = z
     }
   });
 
+export const extractTextListStepSchema = z.object({
+  type: z.literal('extractTextList'),
+  selector: z.string().min(1),
+  limit: z.number().int().positive().max(50).optional(),
+  outputKey: z.string().min(1).regex(/^[a-zA-Z0-9._-]+$/)
+});
+
 export const stepSchema = z.union([
   gotoStepSchema,
   clickStepSchema,
   fillStepSchema,
   expectStepSchema,
   loginStepSchema,
-  waitForStepSchema
+  waitForStepSchema,
+  extractTextListStepSchema
 ]);
 
 export const planSchema = z.object({
@@ -83,5 +91,6 @@ export type FillStep = z.infer<typeof fillStepSchema>;
 export type ExpectStep = z.infer<typeof expectStepSchema>;
 export type LoginStep = z.infer<typeof loginStepSchema>;
 export type WaitForStep = z.infer<typeof waitForStepSchema>;
+export type ExtractTextListStep = z.infer<typeof extractTextListStepSchema>;
 export type TestStep = z.infer<typeof stepSchema>;
 export type TestPlan = z.infer<typeof planSchema>;

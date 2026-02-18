@@ -59,6 +59,9 @@ function printSummary(result: RunResult): void {
       console.log(`  error=${step.error}`);
     }
   }
+  if (Object.keys(result.outputs).length > 0) {
+    console.log(`outputs=${JSON.stringify(result.outputs)}`);
+  }
   console.log(`artifacts=${result.artifacts.runDir}`);
 }
 

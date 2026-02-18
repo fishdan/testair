@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "name": "IBY wallet activity last 5",
+  "steps": [
+    { "type": "goto", "url": "https://app.iby.us/login" },
+    { "type": "fill", "field": "email", "value": "${SECRET:IBY_USERNAME}" },
+    { "type": "fill", "field": "password", "value": "${SECRET:IBY_PASSWORD}" },
+    { "type": "click", "target": "Sign in" },
+    { "type": "expect", "urlIncludes": "/wallet" },
+    { "type": "waitFor", "textVisible": "Wallet activity" },
+    { "type": "extractTextList", "selector": "article[data-testid='transaction-row']", "limit": 5, "outputKey": "walletActivityLast5" }
+  ]
+}

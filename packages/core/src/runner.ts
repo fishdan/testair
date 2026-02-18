@@ -95,11 +95,11 @@ async function executeStep(
   step: CompiledStep,
   profile: SiteProfile,
   timeoutMs: number
-): Promise<void> {
+): Promise<{ outputKey: string; values: string[] } | undefined> {
   if (step.type === 'goto') {
     const url = ensureValue(step.payload.url, 'url');
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: timeoutMs });
-    return;
+    return undefined;
   }
 
   if (step.type === 'click') {
@@ -107,7 +107,7 @@ async function executeStep(
     const selector = typeof step.payload.selector === 'string' ? step.payload.selector : undefined;
     const resolved = await resolveLocator(page, target, selector, profile, timeoutMs);
     await resolved.locator.click({ timeout: timeoutMs });
-    return;
+    return undefined;
   }
 
   if (step.type === 'fill') {
@@ -116,22 +116,22 @@ async function executeStep(
     const value = ensureValue(step.payload.value, 'value');
     const resolved = await resolveLocator(page, field, selector, profile, timeoutMs);
     await resolved.locator.fill(resolveSecretPlaceholders(value, process.env), { timeout: timeoutMs });
-    return;
+    return undefined;
   }
 
   if (step.type === 'expect') {
     const localTimeout = typeof step.payload.timeoutMs === 'number' ? step.payload.timeoutMs : timeoutMs;
     if (typeof step.payload.textVisible === 'string') {
       await page.getByText(step.payload.textVisible).first().waitFor({ state: 'visible', timeout: localTimeout });
-      return;
+      return undefined;
     }
     if (typeof step.payload.urlIncludes === 'string') {
       await page.waitForURL(`**${step.payload.urlIncludes}**`, { timeout: localTimeout });
-      return;
+      return undefined;
     }
     if (typeof step.payload.elementVisible === 'string') {
       await page.locator(step.payload.elementVisible).first().waitFor({ state: 'visible', timeout: localTimeout });
-      return;
+      return undefined;
     }
     throw new Error('expect step missing valid payload');
   }
@@ -139,18 +139,38 @@ async function executeStep(
   if (step.type === 'waitFor') {
     if (typeof step.payload.textVisible === 'string') {
       await page.getByText(step.payload.textVisible).first().waitFor({ state: 'visible', timeout: timeoutMs });
-      return;
+      return undefined;
     }
     if (typeof step.payload.selector === 'string') {
       await page.locator(step.payload.selector).first().waitFor({ state: 'attached', timeout: timeoutMs });
-      return;
+      return undefined;
     }
     if (typeof step.payload.timeoutMs === 'number') {
       await page.waitForTimeout(step.payload.timeoutMs);
-      return;
+      return undefined;
     }
     throw new Error('waitFor step missing valid payload');
   }
+
+  if (step.type === 'extractTextList') {
+    const selector = ensureValue(step.payload.selector, 'selector');
+    const outputKey = ensureValue(step.payload.outputKey, 'outputKey');
+    const limit = typeof step.payload.limit === 'number' ? step.payload.limit : 5;
+    const rows = page.locator(selector);
+    const count = await rows.count();
+    const values: string[] = [];
+
+    for (let index = 0; index < Math.min(limit, count); index += 1) {
+      const normalized = (await rows.nth(index).innerText()).replace(/\s+/g, ' ').trim();
+      if (normalized.length > 0) {
+        values.push(normalized);
+      }
+    }
+
+    return { outputKey, values };
+  }
+
+  return undefined;
 }
 
 export async function runPlan(plan: TestPlan, options: RunOptions = {}): Promise<RunResult> {
@@ -186,6 +206,7 @@ export async function runPlan(plan: TestPlan, options: RunOptions = {}): Promise
         endedAt: nowIso(),
         durationMs: 0
       })),
+      outputs: {},
       artifacts: {
         runDir,
         tracePath,
@@ -199,6 +220,7 @@ export async function runPlan(plan: TestPlan, options: RunOptions = {}): Promise
 
   const startedAt = Date.now();
   const stepResults: StepResult[] = [];
+  const outputs: Record<string, string[]> = {};
   const startedAtIso = nowIso();
   let failureScreenshotPath: string | undefined;
   let failureDomPath: string | undefined;
@@ -223,7 +245,11 @@ export async function runPlan(plan: TestPlan, options: RunOptions = {}): Promise
       const stepStarted = Date.now();
       const stepStartedIso = nowIso();
       try {
-        await executeStep(page, step, siteProfile, timeoutMs);
+        const extracted = await executeStep(page, step, siteProfile, timeoutMs);
+        if (extracted) {
+          outputs[extracted.outputKey] = extracted.values;
+        }
+
         const stepEnded = Date.now();
         stepResults.push({
           index: step.index,
@@ -276,6 +302,7 @@ export async function runPlan(plan: TestPlan, options: RunOptions = {}): Promise
     durationMs: endedAt - startedAt,
     plan,
     steps: stepResults,
+    outputs,
     artifacts: {
       runDir,
       tracePath,

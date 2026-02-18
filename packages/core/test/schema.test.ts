@@ -9,7 +9,8 @@ describe('plan schema', () => {
       steps: [
         { type: 'goto', url: 'https://example.com' },
         { type: 'click', target: 'More information...' },
-        { type: 'expect', textVisible: 'Example Domain' }
+        { type: 'expect', textVisible: 'Example Domain' },
+        { type: 'extractTextList', selector: 'table tbody tr', outputKey: 'rows', limit: 5 }
       ]
     });
 

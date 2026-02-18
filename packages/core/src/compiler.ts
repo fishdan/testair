@@ -1,9 +1,9 @@
-import type { ClickStep, ExpectStep, FillStep, TestPlan, TestStep, WaitForStep } from './schema.js';
+import type { ClickStep, ExpectStep, ExtractTextListStep, FillStep, TestPlan, TestStep, WaitForStep } from './schema.js';
 
 export interface CompiledStep {
   index: number;
   sourceStepIndex: number;
-  type: 'goto' | 'click' | 'fill' | 'expect' | 'waitFor';
+  type: 'goto' | 'click' | 'fill' | 'expect' | 'waitFor' | 'extractTextList';
   description: string;
   payload: Record<string, string | number>;
 }
@@ -92,6 +92,22 @@ function compileWaitFor(step: WaitForStep, sourceStepIndex: number, indexStart: 
   ];
 }
 
+function compileExtractTextList(step: ExtractTextListStep, sourceStepIndex: number, indexStart: number): CompiledStep[] {
+  return [
+    {
+      index: indexStart,
+      sourceStepIndex,
+      type: 'extractTextList',
+      description: `extract text list ${step.outputKey}`,
+      payload: {
+        selector: step.selector,
+        limit: step.limit ?? 5,
+        outputKey: step.outputKey
+      }
+    }
+  ];
+}
+
 function compileLogin(step: Extract<TestStep, { type: 'login' }>, sourceStepIndex: number, indexStart: number): CompiledStep[] {
   // Heuristic login macro: resolve username/password fields by label text first,
   // then click a common submit CTA.
@@ -155,6 +171,9 @@ export function compilePlan(plan: TestPlan): CompiledStep[] {
         break;
       case 'waitFor':
         compiled.push(...compileWaitFor(step, sourceIndex, start));
+        break;
+      case 'extractTextList':
+        compiled.push(...compileExtractTextList(step, sourceIndex, start));
         break;
       default: {
         const neverStep: never = step;

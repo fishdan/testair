@@ -19,6 +19,7 @@ testair/
     ai/        # planner/repair interfaces + mock adapters + patch validation
     cli/       # testair CLI (plan/run/replay)
     server/    # minimal REST API
+  projects/    # per-site test projects (plans + env templates)
   examples/
   scripts/
   README.md
@@ -108,6 +109,7 @@ Supported steps:
 - `expect { textVisible | urlIncludes | elementVisible, timeoutMs? }`
 - `login { username, password }` (macro expanded deterministically)
 - `waitFor { textVisible | selector | timeoutMs }`
+- `extractTextList { selector, limit?, outputKey }` (writes structured output to `RunResult.outputs`)
 
 Validation is enforced with Zod in `packages/core/src/schema.ts`.
 
