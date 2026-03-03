@@ -41,3 +41,71 @@
 - Pushed branch with GitHub App authentication to `origin/task/speckit-constitution-bootstrap`.
 - Verified open pull request exists for this branch:
   - PR: `https://github.com/fishdan/testair/pull/1`
+
+2026-03-03 Update – TellGovernment First Login Test:
+- On branch `task/tellgovernment-testing-foundation`, updated login smoke plan at `projects/tellgovernment.com/plans/login-smoke.plan.json` to validate TellGovernment.us login success.
+- Changed entry URL from `https://app.tellgovernment.com` to `https://tellgovernment.us`.
+- Replaced non-validating timeout step with explicit success assertion:
+  - `expect urlIncludes="/officials" timeoutMs=15000`
+- Added authenticated content assertion:
+  - `expect textVisible="Donald Trump" timeoutMs=15000`
+- Stored provided test credentials in local ignored file:
+  - `projects/tellgovernment.com/test-user.env.local`
+  - Keys: `TELLGOV_USERNAME`, `TELLGOV_PASSWORD`
+- Validation run:
+  - `node packages/cli/dist/index.js run projects/tellgovernment.com/plans/login-smoke.plan.json --env projects/tellgovernment.com/test-user.env.local --dry-run`
+  - Result: passed, runIds `run_1772552564944`, `run_1772552688633`
+- Live (non-dry-run) execution results:
+  - Run `run_1772552750349` failed at step 1 due DNS resolution (`https://tellgovernment.us` -> `ERR_NAME_NOT_RESOLVED`).
+  - Updated plan base URL back to `https://app.tellgovernment.com`.
+  - Run `run_1772552804397` then passed login + `/officials` URL assertion and failed only content assertion:
+    - Expected `textVisible="Donald Trump"` not found within timeout.
+    - Failure DOM indicates officials page includes `Donald J. Trump`.
+  - After plan update, run `run_1772553051601` passed all steps.
+- Completion decision:
+  - Marked TellGovernment login smoke test task complete.
+  - Acceptance validated in live run: successful login, `/officials` route reached, and expected officials-page content assertion passed.
+
+2026-03-03 Update – Settings Address Toggle Test (MA <-> TX):
+- Added new plan: `projects/tellgovernment.com/plans/settings-address-toggle.plan.json`.
+- Test flow:
+  - Login as existing test user.
+  - Open `Settings` from profile menu.
+  - Update address fields to MA target and save.
+  - Assert return to `/officials` and `Massachusetts` visible.
+  - Reopen `Settings`, update to TX target and save.
+  - Assert return to `/officials` and `Texas` visible.
+- Validation runs:
+  - Dry-run passed: `run_1772555727588`.
+  - Live run `run_1772555738275` failed because settings modal stayed open after save and intercepted profile-menu click.
+  - Updated plan to click `Close` after each save.
+  - Live run `run_1772555766769` then progressed through second save, but final assertion failed:
+    - `Texas` not visible within timeout.
+    - Failure DOM shows officials context remained `Woods Hole, MA` (Massachusetts tabs still present).
+- Decision:
+  - Keep current strict `Texas` assertion to surface this behavior as a failing regression signal until address-state switching to TX is confirmed working.
+
+2026-03-03 Update – Settings Save Debug Root Cause:
+- Investigated settings flow in live Playwright probes to isolate why modal did not close and TX assertion failed.
+- Observed behavior:
+  - `Save Changes` keeps the settings modal open in automation sessions for this user.
+  - Reopening settings after save reverts to persisted MA profile values (`232 Quissett Avenue`, `Woods Hole`, `MA`, `02543`).
+  - Location banner remains `Showing officials for Woods Hole, MA`.
+- Captured network on save:
+  - Request: `PUT https://app.tellgovernment.com/api/profiles/<userId>`
+  - Response: `500`
+  - Body: `{\"error\":\"Address change rate limited. Please try again in 24 hours.\"}`
+- Conclusion:
+  - Primary blocker is backend rate limiting on address changes for current test user, not a test-runner click failure.
+
+2026-03-03 Update – Added Rate-Limit Handling Test:
+- Added plan `projects/tellgovernment.com/plans/settings-address-rate-limit-close.plan.json`.
+- Purpose:
+  - Attempt settings address change.
+  - Assert visible rate-limit error (`Address change rate limited`).
+  - Click `Close`.
+  - Assert return to officials page context (`/officials` + `Showing officials for`).
+- Live validation:
+  - Run `run_1772556253477` passed all steps.
+- Completion decision:
+  - Marked rate-limit close/return behavior test complete.
