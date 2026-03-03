@@ -1,0 +1,43 @@
+2026-03-03 Update – Repo AI Bootstrap And GitHub App Auth:
+- Verified `.repo_ai` was not attached as a valid git submodule (missing `.gitmodules`, broken submodule gitdir pointer).
+- Repaired `.repo_ai` by adding it as a real submodule from `https://github.com/fishdan/repo-ai.git`.
+- Preserved and restored local GitHub App secret files in `.repo_ai/secrets/` during submodule repair.
+- Executed `.repo_ai/scripts/github-app-setup-git-auth.sh` successfully.
+- Confirmed git commit identity now uses GitHub App bot:
+  - `user.name=ai-codex-dan[bot]`
+  - `user.email=2461425+ai-codex-dan[bot]@users.noreply.github.com`
+- Confirmed installation token validation covered required repositories:
+  - `fishdan/repo-ai`
+  - `fishdan/fishdan-terraform`
+  - `fishdan/testair`
+- Token expiry noted by setup output: `2026-03-03T15:07:17Z`.
+
+2026-03-03 Update – Spec-Kit Tracking Gap:
+- Searched repository for `progress.ai` history, spec-kit task files, and a spec-kit constitution; none were present in the working tree.
+- Decision: treat this as a process blocker for nontrivial feature work and request/define spec-kit task artifacts before proceeding with additional scoped development.
+
+2026-03-03 Update – Created Enforceable Spec-Kit Constitution:
+- Read `README.md` to anchor constitution rules to product intent (deterministic DSL + constrained repair + Playwright execution).
+- Added `speckit/constitution.md` with enforceable `MUST`/`MUST NOT` governance, architecture, security, and PR quality gates.
+- Defined required modular testing model:
+  - Atomic reusable test steps with explicit `inputs/outputs/preconditions/postconditions`.
+  - Regression suites execute chainable `test modules`, not isolated tests.
+  - Explicit step-to-step state passing (auth/session/user context) is required.
+  - Browser/session reuse across chained steps is allowed when documented.
+- Added completion and anti-scope rules to discourage non-task work unless an approved spec-kit task exists.
+
+2026-03-03 Update – Constitution Amendment (Version Control Rules):
+- Added `Version Control Discipline` section to `speckit/constitution.md`.
+- Enforced branch-only development and prohibition of direct commits to `main`.
+- Enforced requirement that all task branches merge back to `main`.
+- Enforced clean-`main` precondition before creating a new branch (`git status` must be clean).
+- Added branch hygiene rule requiring one branch per approved spec-kit task with no unrelated scope.
+
+2026-03-03 Update – Branch/Commit/PR Workflow:
+- To honor constitution branch rules, stashed dirty `main` state, cleaned `main`, then created branch `task/speckit-constitution-bootstrap`.
+- Restored stashed changes onto the task branch and committed:
+  - Commit: `af7f59e`
+  - Message: `chore: add speckit constitution and repo-ai bootstrap setup`
+- Pushed branch with GitHub App authentication to `origin/task/speckit-constitution-bootstrap`.
+- Verified open pull request exists for this branch:
+  - PR: `https://github.com/fishdan/testair/pull/1`

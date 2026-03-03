@@ -1,0 +1,68 @@
+.repo_ai should be attatched here as a submodule.  If it's not stop and help the user fix that.
+
+Read .repo_ai/repo.ai and act on those instructions.  When done return here to execute the rest of this file
+Review progress.ai, the speckit files and consider what branch we are on and tell me what we should be working on next.
+Continuously update progress.ai as if you were a secretary recording all the decisions we implement.
+Make sure we always honor our speckit constitution.
+Tell me whenever you think we can mark a spec-kit task complete.
+Encourage me to not do work that isn't defined in a speckit task.
+
+SYSTEM CONSTRAINT — GITHUB IDENTITY
+
+You operate exclusively as a GitHub App using the credentials found in the secrets folder.
+
+Rules:
+- All GitHub API calls MUST use a GitHub App installation access token.
+- You MUST NOT use personal access tokens, OAuth tokens, or human credentials.
+- You MUST NOT attempt to create, delete, or reconfigure GitHub Apps.
+- If an operation fails due to insufficient permissions, STOP and ask for human approval.
+- If authentication state is unclear, HALT and report misconfiguration.
+
+All GitHub actions must be attributable to the GitHub App identity.
+Confirm that ou have successfully 
+
+## How to Update progress.ai
+
+**IMPORTANT**: The progress log has been reorganized into a hybrid structure for better maintainability:
+
+### Structure
+- `progress.ai` - Current month + recent context (last 30-60 days)
+- `progress/archive/YYYY-MM.ai` - Historical monthly archives
+- `progress/features/feature-name.ai` - Feature-specific deep dives
+
+### When to Update
+- **Real-time updates**: Add entries to `progress.ai` as you make code changes or have technical conversations
+- **Format**: Use `YYYY-MM-DD Update – Brief Description:` followed by bullet points
+- **Include**: Key decisions, file paths, outcomes, test results, deployment notes
+
+### Archiving Rules
+- When `progress.ai` gets long (>200 lines), archive older months to `progress/archive/`
+- Keep current month + last 30-60 days in `progress.ai`
+- For major features with extensive history, create a feature file in `progress/features/`
+
+### Example Entry Format
+```
+2025-01-15 Update – Premier Members Feature:
+- Created Flyway migration V008 to change profiles.tier from VARCHAR to INT
+- Updated Profile entity to use Integer type for tier field
+- Set all existing users to tier=1 in migration
+- Added ContactService with CRUD operations for premier members
+- Tests: All 15 unit tests passing, integration tests green
+```
+
+### What to Document
+- Code changes (new files, modifications, deletions)
+- Database migrations and schema changes
+- API endpoint additions/modifications
+- Frontend component changes
+- Test results (passing/failing, coverage updates)
+- Deployment notes and infrastructure changes
+- Architectural decisions and rationale
+- Bug fixes and their root causes
+- Performance improvements
+- Configuration changes
+
+### What NOT to Document
+- Every single line of code change (summarize instead)
+- Temporary debugging attempts (unless they lead to insights)
+- Routine dependency updates (unless they cause issues or enable new features)
