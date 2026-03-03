@@ -1,0 +1,3 @@
+[submodule ".repo_ai"]
+	path = .repo_ai
+	url = https://github.com/fishdan/repo-ai.git
