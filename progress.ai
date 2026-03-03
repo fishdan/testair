@@ -32,3 +32,12 @@
 - Enforced requirement that all task branches merge back to `main`.
 - Enforced clean-`main` precondition before creating a new branch (`git status` must be clean).
 - Added branch hygiene rule requiring one branch per approved spec-kit task with no unrelated scope.
+
+2026-03-03 Update – Branch/Commit/PR Workflow:
+- To honor constitution branch rules, stashed dirty `main` state, cleaned `main`, then created branch `task/speckit-constitution-bootstrap`.
+- Restored stashed changes onto the task branch and committed:
+  - Commit: `af7f59e`
+  - Message: `chore: add speckit constitution and repo-ai bootstrap setup`
+- Pushed branch with GitHub App authentication to `origin/task/speckit-constitution-bootstrap`.
+- Verified open pull request exists for this branch:
+  - PR: `https://github.com/fishdan/testair/pull/1`
