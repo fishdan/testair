@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "name": "TellGovernment settings address toggle (MA <-> TX)",
+  "steps": [
+    { "type": "goto", "url": "https://app.tellgovernment.com" },
+    { "type": "click", "target": "Sign In" },
+    { "type": "fill", "field": "Email address", "selector": "#identifier-field", "value": "${SECRET:TELLGOV_USERNAME}" },
+    { "type": "fill", "field": "Password", "selector": "#password-field", "value": "${SECRET:TELLGOV_PASSWORD}" },
+    { "type": "click", "target": "Continue" },
+    { "type": "expect", "urlIncludes": "/officials", "timeoutMs": 15000 },
+
+    { "type": "click", "target": "pseudonym_ima@hotmail.com" },
+    { "type": "click", "target": "Settings" },
+    { "type": "fill", "field": "Address", "selector": "#address", "value": "232 Quissett Ave" },
+    { "type": "fill", "field": "City", "selector": "#city", "value": "Falmouth" },
+    { "type": "fill", "field": "State", "selector": "#state", "value": "MA" },
+    { "type": "fill", "field": "ZIP Code", "selector": "#zipCode", "value": "02543" },
+    { "type": "click", "target": "Save Changes" },
+    { "type": "click", "target": "Close" },
+    { "type": "expect", "urlIncludes": "/officials", "timeoutMs": 15000 },
+    { "type": "expect", "textVisible": "Massachusetts", "timeoutMs": 15000 },
+
+    { "type": "click", "target": "pseudonym_ima@hotmail.com" },
+    { "type": "click", "target": "Settings" },
+    { "type": "fill", "field": "Address", "selector": "#address", "value": "7001 Youpon" },
+    { "type": "fill", "field": "City", "selector": "#city", "value": "Galveston" },
+    { "type": "fill", "field": "State", "selector": "#state", "value": "TX" },
+    { "type": "fill", "field": "ZIP Code", "selector": "#zipCode", "value": "77551" },
+    { "type": "click", "target": "Save Changes" },
+    { "type": "click", "target": "Close" },
+    { "type": "expect", "urlIncludes": "/officials", "timeoutMs": 15000 },
+    { "type": "expect", "textVisible": "Texas", "timeoutMs": 15000 }
+  ]
+}

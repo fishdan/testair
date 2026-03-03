@@ -1,12 +1,26 @@
 {
   "version": "1",
-  "name": "TellGovernment login smoke",
+  "name": "TellGovernment.us login smoke",
   "steps": [
     { "type": "goto", "url": "https://app.tellgovernment.com" },
     { "type": "click", "target": "Sign In" },
     { "type": "fill", "field": "Email address", "selector": "#identifier-field", "value": "${SECRET:TELLGOV_USERNAME}" },
     { "type": "fill", "field": "Password", "selector": "#password-field", "value": "${SECRET:TELLGOV_PASSWORD}" },
     { "type": "click", "target": "Continue" },
-    { "type": "waitFor", "timeoutMs": 3000 }
+    {
+      "type": "expect",
+      "urlIncludes": "/officials",
+      "timeoutMs": 15000
+    },
+    {
+      "type": "expect",
+      "textVisible": "Donald",
+      "timeoutMs": 15000
+    },
+    {
+      "type": "expect",
+      "textVisible": "Trump",
+      "timeoutMs": 15000
+    }
   ]
 }
